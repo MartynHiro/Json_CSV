@@ -37,7 +37,7 @@ public class Basket {
         return sb.toString();
     }
 
-    public boolean saveTxt(File textFile) {
+    public void saveTxt(File textFile) {
         try (BufferedWriter writer = new BufferedWriter((new FileWriter(textFile, false)))) {
 
             for (String product : products) { //записываем все продукты в 1ю строку
@@ -55,11 +55,9 @@ public class Basket {
                 writer.write(count + " ");
             }
 
-            return true;
         } catch (IOException e) {
             System.out.println("Ошибка записи файла");
         }
-        return false;
     }
 
     public void saveJson(Basket basket, File fileJson) {

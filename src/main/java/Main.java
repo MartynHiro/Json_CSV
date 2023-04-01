@@ -1,75 +1,31 @@
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static final File CONFIGURATIONS_XML = new File("shop.xml");
+    public static final File SHOP_CONFIG_TXT = new File("shopConfigs.txt");
+    public static final String[] PRODUCTS = {
+            "Pepsi",
+            "Donut",     //продукты
+            "Pie"
+    };
+    public static final int[] PRICES = {57, 39, 189}; //цены продуктов
+
+    public static void main(String[] args) throws ParserConfigurationException {
         Scanner scan = new Scanner(System.in);
         Basket basket;
 
-        String[] products = {
-                "Pepsi",
-                "Donut",     //продукты
-                "Pie"
-        };
+        Shop.shopSettingsFromXML(CONFIGURATIONS_XML); //в первую очередь загружаем xml файл с настройками
 
-        int[] prices = {57, 39, 189}; //цены продуктов
+        basket = MethodsShelf.needToLoad();
 
-        File fileJson = new File("basket.json");
-        File fileCSV = new File("log.csv");
-
-        ClientLog clientLog = new ClientLog(); //создается клиентский лог
-
-        if (Basket.loadFromJsonFile(fileJson) == null) { //если по данному пути нет файла для загрузки, создаем новую корзину
-            basket = new Basket(products, prices);
-            System.out.println("Создаем новую корзину, так как старая не найдена");
-        } else {
-            basket = Basket.loadFromJsonFile(fileJson); //если она там есть, то сохраняем старую корзину
-            System.out.println("Найдена старая корзина, произведена загрузка");
-        }
-
-        while (true) {
-            MethodsShelf.startMessage(products, prices);
-
-            String input = scan.nextLine();
-
-            if ("end".equals(input)) {
-                break;
-            }
-
-            if (!MethodsShelf.isSpaceSecond(input)) {
-                RuntimeException x = new AmountOfInputNumbersException(input);
-                MethodsShelf.error(x);
-                continue;
-            }
-
-            String[] parts = input.split(" ");
-
-            try {
-                int productNumber = Integer.parseInt(parts[0]) - 1;
-                int productCount = Integer.parseInt(parts[1]);
-                //записываем покупку в лог и корзину
-                clientLog.log(productNumber, productCount);
-                Objects.requireNonNull(basket).addToCart(productNumber, productCount);
-
-            } catch (Exception x) {
-                System.out.println("Вы вводите буквы, а необходимы цифры!!!!!!");
-                System.out.println("-------------------------------------------");
-                continue;
-            }
-
-            if (!MethodsShelf.isNumberCorrect(parts[0], parts[1], products)) {
-                RuntimeException x = new IncorrectInputNumbersException(input);
-                MethodsShelf.error(x);
-            }
-        }
+        MethodsShelf.inputCycle(scan, basket);
 
         System.out.println(Objects.requireNonNull(basket).printCart()); //выводим корзину на экран
 
-        clientLog.exportAsCSV(fileCSV);//создаем файл лога нашей последней работы
-
-        basket.saveJson(basket, fileJson);
-
+        MethodsShelf.needToSave(basket);
     }
 }

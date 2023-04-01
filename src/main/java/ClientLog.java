@@ -7,15 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 
-public class ClientLog {
-    private Map<Integer, Integer> productLog = new HashMap<>();
+public abstract class ClientLog {
+    private final static Map<Integer, Integer> productLog = new HashMap<>();
 
-    public void log(int productNum, int amount) {
+    public static void log(int productNum, int amount) {
         productLog.put(productNum + 1, amount);
     }
 
-    public void exportAsCSV(File file) {
-        try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
+    public static void exportAsCSV(File file) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(file, true))) {
 //заполняем первую строку файла, а потом переводим нашу мапу в CSV формат
             StringJoiner namesOfProductsString = new StringJoiner(",")
                     .add("product number")
