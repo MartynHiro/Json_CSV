@@ -1,8 +1,11 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.*;
 
 public class Basket {
-    private String[] products;
-    private int[] prices;
+    private final String[] products;
+    private final int[] prices;
     private int[] counts;
 
 
@@ -59,8 +62,33 @@ public class Basket {
         return false;
     }
 
+    public void saveJson(Basket basket, File fileJson) {
+
+        try (FileWriter writer = new FileWriter(fileJson)) {
+
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            writer.write(gson.toJson(basket));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Basket loadFromJsonFile(File jsonFile) {
-        try (BufferedReader reader = new BufferedReader((new FileReader(jsonFile)))) {
+
+        Gson gson = new Gson();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(jsonFile));
+            return gson.fromJson(br, Basket.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Basket loadFromTxtFile(File txtFile) {
+        try (BufferedReader reader = new BufferedReader((new FileReader(txtFile)))) {
             String[] loadedProducts;
             int[] loadedPrices;
             int[] loadedCount;

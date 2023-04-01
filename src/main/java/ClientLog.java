@@ -1,5 +1,6 @@
 import com.opencsv.CSVWriter;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,8 +14,8 @@ public class ClientLog {
         productLog.put(productNum + 1, amount);
     }
 
-    public void exportAsCSV() {
-        try (CSVWriter writer = new CSVWriter(new FileWriter("log.csv"))) {
+    public void exportAsCSV(File file) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
 //заполняем первую строку файла, а потом переводим нашу мапу в CSV формат
             StringJoiner namesOfProductsString = new StringJoiner(",")
                     .add("product number")

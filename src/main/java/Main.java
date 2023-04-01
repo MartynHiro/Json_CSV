@@ -16,15 +16,17 @@ public class Main {
 
         int[] prices = {57, 39, 189}; //цены продуктов
 
-        File file = new File("basket.txt");
+        File fileJson = new File("basket.json");
+        File fileCSV = new File("log.csv");
 
         ClientLog clientLog = new ClientLog(); //создается клиентский лог
 
-        if (Basket.loadFromJsonFile(file) == null) { //если по данному пути нет файла для загрузки, создаем новую корзину
+        if (Basket.loadFromJsonFile(fileJson) == null) { //если по данному пути нет файла для загрузки, создаем новую корзину
             basket = new Basket(products, prices);
-
+            System.out.println("Создаем новую корзину, так как старая не найдена");
         } else {
-            basket = Basket.loadFromJsonFile(file); //если она там есть, то сохраняем старую корзину
+            basket = Basket.loadFromJsonFile(fileJson); //если она там есть, то сохраняем старую корзину
+            System.out.println("Найдена старая корзина, произведена загрузка");
         }
 
         while (true) {
@@ -65,13 +67,9 @@ public class Main {
 
         System.out.println(Objects.requireNonNull(basket).printCart()); //выводим корзину на экран
 
-        clientLog.exportAsCSV();//создаем файл лога нашей последней работы
+        clientLog.exportAsCSV(fileCSV);//создаем файл лога нашей последней работы
 
-        boolean isSave = Objects.requireNonNull(basket).saveTxt(file); //в конце работы сохраняем нашу корзину
-        if (isSave) {
-            System.out.println("Файл успешно сохранен");
-        } else {
-            System.out.println("Ошибка в сохранении файла");
-        }
+        basket.saveJson(basket, fileJson);
+
     }
 }
